@@ -16,6 +16,6 @@ public class MoverPlayer : MonoBehaviour
         playerSpeed *= _speed;
 
         if (_characterController.isGrounded)
-            _characterController.Move((playerSpeed + verticalVelocity) * Time.deltaTime);
+            _characterController.Move((playerSpeed + verticalVelocity + Physics.gravity) * Time.deltaTime);
     }
 }
