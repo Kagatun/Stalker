@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
     [SerializeField] private OverviewPlayer _overviewPlayer;
     [SerializeField] private MoverPlayer _moverPlayer;
     [SerializeField] private JumpPlayer _jumpPlayer;
+    [SerializeField] private LayerMask _groundLayers;
 
     private Transform _transform;
     private CharacterController _characterController;
@@ -28,7 +29,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            ToLand();
+            PinToGround();
         }
 
         Move(_inputDetector.MoveDirection.x, _inputDetector.MoveDirection.y);
@@ -44,7 +45,7 @@ public class Player : MonoBehaviour
         _inputDetector.Rotated -= OnRotateCamera;
     }
 
-    private void ToLand()
+    private void PinToGround()
     {
         Vector3 horizontalVelocity = _characterController.velocity;
         horizontalVelocity.y = 0;
@@ -52,18 +53,31 @@ public class Player : MonoBehaviour
         _characterController.Move((horizontalVelocity + _verticalVelocity) * Time.deltaTime);
     }
 
-    private void OnRotateCamera(float mouseX, float mouseY)
-    {
+    private void OnRotateCamera(float mouseX, float mouseY) =>
         _overviewPlayer.RotateCamera(mouseX, mouseY);
-    }
 
     private void Move(float horizontal, float vertical)
     {
         Vector3 forward = _overviewPlayer.transform.forward;
         Vector3 right = _overviewPlayer.transform.right;
+
         _playerSpeed = forward * vertical + right * horizontal;
+        _playerSpeed = GetNormalDirection();
 
         _moverPlayer.Move(_playerSpeed, _verticalVelocity);
+    }
+
+    private Vector3 GetNormalDirection()
+    {
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, _groundLayers))
+        {
+            Vector3 normal = hit.normal;
+            Vector3 receivedDirection = Vector3.ProjectOnPlane(_playerSpeed, normal).normalized;
+
+            return receivedDirection;
+        }
+
+        return Vector3.zero;
     }
 }
 

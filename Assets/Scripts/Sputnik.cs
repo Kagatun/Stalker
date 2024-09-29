@@ -31,12 +31,12 @@ public class Sputnik : MonoBehaviour
         if (Physics.SphereCast(transform.position, _sphereCastRadius, Vector3.down, out RaycastHit hit, _sphereCastRadius, _groundLayers))
         {
             float surfaceAngle = Vector3.Angle(hit.normal, Vector3.up);
+            Vector3 normal = hit.normal;
 
             if (surfaceAngle < _slopeMax && distance > _stopDistance)
             {
-                Vector3 targetVelocity = direction * _speed;
-                targetVelocity.y = 0;
-                _rigidbody.velocity = targetVelocity;
+                Vector3 receivedDirection = Vector3.ProjectOnPlane(direction, normal).normalized;
+                _rigidbody.velocity = receivedDirection * _speed;
             }
             else
             {
