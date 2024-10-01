@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class JumpPlayer : MonoBehaviour
 {
-    private float _jumpSpeed = 9f;
+    private float _jumpSpeed = 12f;
 
     public void Jump(bool isJumped, ref Vector3 verticalVelocity)
     {
